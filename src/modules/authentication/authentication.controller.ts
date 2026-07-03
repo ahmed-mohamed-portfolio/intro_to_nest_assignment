@@ -1,0 +1,60 @@
+import { AuthenticationService } from './authentication.service';
+import {
+  Body,
+  Controller,
+  Param,
+  Post,
+  Query,
+  ValidationPipe,
+} from '@nestjs/common';
+
+import type { signinDto, signupDto } from './dto/authentication.dto';
+
+@Controller('auth')
+export class AuthenticationController {
+  constructor(private readonly authenticationService: AuthenticationService) {}
+
+  @Post('/signup/:id')
+  signup(
+    // @Body('age', ParseIntPipe) age: number,
+    // @Body(new CustomValidationPipePipe<signupDto>(signupSchema.body))
+    // body: signupDto,
+
+    @Body(
+      new ValidationPipe({
+        stopAtFirstError: true,
+        whitelist: true,
+        forbidNonWhitelisted: true,
+      }),
+    )
+    Body: signupDto,
+    @Query() Query: any,
+    @Param() Param: any,
+  ) {
+    console.log(Body);
+
+    return { message: 'done', Body };
+    // const result = this.authenticationService.signup(body);
+    // return result;
+  }
+
+  @Post('signin')
+  login(
+    // @Body(new CustomValidationPipePipe<signinDto>(signinSchema.body))
+    // body: signinDto,
+    @Body(
+      new ValidationPipe({
+        stopAtFirstError: true,
+        whitelist: true,
+        forbidNonWhitelisted: true,
+      }),
+    )
+    Body: signinDto,
+  ) {
+    console.log(Body);
+
+    return { message: 'done', Body };
+    // const result = this.authenticationService.signin(body);
+    // return result;
+  }
+}
