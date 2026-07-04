@@ -40,8 +40,8 @@ export class AuthenticationController {
   ) {
     console.log(Body);
 
-    return { message: 'done', Body };
-    // const result = this.authenticationService.signup(body);
+    const result = this.authenticationService.signup(Body);
+    return { message: 'done', result };
     // return result;
   }
 
