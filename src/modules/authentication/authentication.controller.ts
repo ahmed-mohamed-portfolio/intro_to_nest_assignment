@@ -21,8 +21,8 @@ import { signinDto, signupDto } from './dto/authentication.dto';
 export class AuthenticationController {
   constructor(private readonly authenticationService: AuthenticationService) {}
 
-  @Post('/signup/:id')
-  signup(
+  @Post('/signup')
+  async signup(
     // @Body('age', ParseIntPipe) age: number,
     // @Body(new CustomValidationPipePipe<signupDto>(signupSchema.body))
     // body: signupDto,
@@ -40,7 +40,7 @@ export class AuthenticationController {
   ) {
     console.log(Body);
 
-    const result = this.authenticationService.signup(Body);
+    const result = await this.authenticationService.signup(Body);
     return { message: 'done', result };
     // return result;
   }
