@@ -5,11 +5,18 @@ import {
   Param,
   Post,
   Query,
+  UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
 
 import { signinDto, signupDto } from './dto/authentication.dto';
-
+@UsePipes(
+  new ValidationPipe({
+    stopAtFirstError: true,
+    whitelist: true,
+    forbidNonWhitelisted: true,
+  }),
+)
 @Controller('auth')
 export class AuthenticationController {
   constructor(private readonly authenticationService: AuthenticationService) {}
