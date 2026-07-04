@@ -8,7 +8,7 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 
-import type { signinDto, signupDto } from './dto/authentication.dto';
+import { signinDto, signupDto } from './dto/authentication.dto';
 
 @Controller('auth')
 export class AuthenticationController {

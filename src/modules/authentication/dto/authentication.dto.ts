@@ -3,16 +3,18 @@
 
 import {
   IsEmail,
-  IsNotEmpty,
   IsStrongPassword,
   MaxLength,
   Min,
   MinLength,
+  ValidateIf,
 } from 'class-validator';
 
 // export type signinDto = z.infer<typeof signinSchema.body>;
 
 // export type signupDto = z.infer<typeof signupSchema.body>;
+
+import { IsMatch } from 'src/common/decorators';
 
 export class signinDto {
   @IsEmail({}, { message: 'email not valid' })
@@ -21,7 +23,10 @@ export class signinDto {
   @IsStrongPassword()
   password!: string;
 
-  @IsNotEmpty()
+  @ValidateIf((data: any) => {
+    return Boolean(data.password);
+  })
+  @IsMatch(['password'])
   confirmpassword!: string;
 }
 
