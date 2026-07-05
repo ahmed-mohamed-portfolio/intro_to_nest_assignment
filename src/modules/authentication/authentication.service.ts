@@ -1,16 +1,21 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { signinDto, signupDto } from './dto/authentication.dto';
-import { InjectModel } from '@nestjs/mongoose';
-import { user } from 'src/common/model';
-import { Model } from 'mongoose';
 import { IUser } from 'src/common/interfaces';
+import { userRepository } from 'src/common/repository';
 
 @Injectable()
 export class AuthenticationService {
-  constructor(@InjectModel(user.name) private readonly model: Model<IUser>) {}
+  constructor(private readonly userRepository: userRepository) {}
 
-  async signup(body: signupDto) {
-    const users = await this.model.create(body);
+  async signup(body: signupDto): Promise<IUser> {
+    const checkUserExist = await this.userRepository.findOne({
+      email: body.email,
+    });
+    if (checkUserExist) {
+      throw new ConflictException('email exist');
+    }
+    const users = await this.userRepository.create(body);
+    users.password = ' ';
     return users;
   }
 
