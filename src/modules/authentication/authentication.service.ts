@@ -16,7 +16,7 @@ export class AuthenticationService {
     }
     const users = await this.userRepository.create(body);
     users.password = ' ';
-    return users;
+    return users.toJSON();
   }
 
   signin(body: signinDto) {
