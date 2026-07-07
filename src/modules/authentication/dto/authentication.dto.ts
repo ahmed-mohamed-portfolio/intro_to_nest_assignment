@@ -3,6 +3,8 @@
 
 import {
   IsEmail,
+  IsOptional,
+  IsString,
   IsStrongPassword,
   MaxLength,
   Min,
@@ -39,6 +41,9 @@ export class signupDto extends signinDto {
   @MaxLength(20)
   lastName!: string;
 
+  @IsOptional()
+  @IsString()
+  phone?: string;
   @Min(18)
   age!: number;
 }

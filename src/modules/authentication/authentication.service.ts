@@ -15,7 +15,7 @@ export class AuthenticationService {
       throw new ConflictException('email exist');
     }
     const users = await this.userRepository.create(body);
-    users.password = ' ';
+    // users.password = ' ';
     return users.toJSON();
   }
 

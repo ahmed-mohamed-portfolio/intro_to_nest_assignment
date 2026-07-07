@@ -8,6 +8,9 @@ import {
 import { IUser } from '../interfaces';
 import { GenderEnum, ProviderEnum, RoleEnum } from '../enums';
 import { HydratedDocument } from 'mongoose';
+import { BadRequestException } from '@nestjs/common';
+import { securityModule } from '../modules/security/security.module';
+import { securityService } from '../modules/security/security.service';
 
 @Schema(
   //i can add schema options
@@ -70,6 +73,126 @@ export class user implements IUser {
 }
 
 export const userSchema = SchemaFactory.createForClass(user);
-export const userModel = MongooseModule.forFeature([
-  { name: user.name, schema: userSchema },
+// export const userModel = MongooseModule.forFeature([
+//   { name: user.name, schema: userSchema },
+// ]);
+
+export const userModel = MongooseModule.forFeatureAsync([
+  {
+    name: user.name,
+    imports: [securityModule],
+    useFactory: (securityService: securityService) => {
+      /*
+userSchema.pre(["deleteOne", "findOneAndDelete"], function () {
+
+    if (this.getQuery().force == true) {
+        this.setQuery({
+            ...this.getQuery(),
+        })
+    } else {
+        this.setQuery({
+            ...this.getQuery(),
+            deletedAt: { $exists: true }
+        })
+    }
+
+})
+
+
+
+
+userSchema.pre(["updateOne", "findOneAndUpdate"], function () {
+
+    const update = this.getUpdate() as HydratedDocument<IUser>
+
+    if (update.deletedAt) {
+        this.getQuery().paranoid = true
+        this.setUpdate({
+            ...this.getUpdate(),
+            $unset: { restoredAt: 1 }
+        })
+    }
+
+    if (update.restoredAt) {
+        this.setQuery({
+            ...this.getQuery(),
+            paranoid: false,
+            deletedAt: { $exists: true }
+        })
+        this.setUpdate({
+            ...this.getUpdate(),
+            $unset: { deletedAt: 1 }
+        })
+    }
+
+    if (this.getQuery().paranoid == false) {
+        this.setQuery({
+            ...this.getQuery(),
+        })
+    } else {
+        this.setQuery({
+            ...this.getQuery(),
+            deletedAt: { $exists: false }
+        })
+    }
+
+    console.log(this.getQuery());
+
+})
+
+
+
+
+
+
+userSchema.pre(["find", "findOne"], function () {
+
+    if (this.getQuery().paranoid == false) {
+        this.setQuery({
+            ...this.getQuery(),
+        })
+    } else {
+        this.setQuery({
+            ...this.getQuery(),
+            deletedAt: { $exists: false }
+        })
+    }
+
+})
+
+
+
+
+
+
+    */
+
+      userSchema.pre(
+        'save',
+        async function (this: HydratedDocument<IUser> & { wasNew: boolean }) {
+          this.wasNew = this.isNew;
+
+          if (this.isModified('password')) {
+            this.password = await securityService.generateHash({
+              plaintext: this.password as string,
+            });
+          }
+
+          if (this.phone && this.isModified('phone')) {
+            this.phone = await securityService.generateEncryption(this.phone);
+          }
+        },
+      );
+
+      //hook check if password come with gmail
+      userSchema.pre('validate', function () {
+        if (this.password && this.provider == ProviderEnum.google) {
+          throw new BadRequestException('Google account cannot hold password');
+        }
+      });
+
+      return userSchema;
+    },
+    inject: [securityService],
+  },
 ]);
