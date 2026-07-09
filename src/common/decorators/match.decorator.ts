@@ -1,15 +1,7 @@
-import {
-  registerDecorator,
-  ValidationArguments,
-  ValidationOptions,
-  ValidatorConstraint,
-  ValidatorConstraintInterface,
-} from 'class-validator';
+import { registerDecorator, ValidationArguments, ValidationOptions, ValidatorConstraint, ValidatorConstraintInterface } from 'class-validator';
 
 @ValidatorConstraint({ name: 'MatchBetweenFields', async: false })
-export class MatchBetweenFields<
-  T = any,
-> implements ValidatorConstraintInterface {
+export class MatchBetweenFields<T = any> implements ValidatorConstraintInterface {
   validate(value: T, args: ValidationArguments) {
     return value == args.object[args.constraints[0]];
   }
@@ -19,10 +11,7 @@ export class MatchBetweenFields<
   }
 }
 
-export function IsMatch<T = any>(
-  constraints: string[] = [],
-  validationOptions?: ValidationOptions,
-) {
+export function IsMatch<T = any>(constraints: string[] = [], validationOptions?: ValidationOptions) {
   return function (object: object, propertyName: string) {
     registerDecorator({
       target: object.constructor,
